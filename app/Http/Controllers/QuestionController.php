@@ -22,8 +22,12 @@ class QuestionController extends Controller
     public function getNearQuestion(Request $request) {
         $lat = $request->input('lat');
         $lng = $request->input('lng');
-        $question = Question::distanceSphere(350000, new Point($lat, $lng), 'location')
+//        $question = Question::distanceSphere(350000, new Point($lat, $lng), 'location')
+//            ->get();
+        $point = new Point($lat, $lng);
+        $question = Question::selectRaw("*, st_distance_sphere(`location`, GeomFromText('{$point->toWkt()}')) as dist")
+            ->whereRaw("st_distance_sphere(`location`, GeomFromText('{$point->toWkt()}')) <= `distance`")
             ->get();
-        return $question;
+        return view('list', ['questions' => $question]);
     }
 }

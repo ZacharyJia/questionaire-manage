@@ -3,6 +3,7 @@
 use Grimzy\LaravelMysqlSpatial\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
+
 class CreateTableQuestionaire extends Migration
 {
     /**
