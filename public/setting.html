@@ -27,7 +27,7 @@
 	map.centerAndZoom("武汉",14);
 	//单击获取点击的经纬度
 	map.addEventListener("click",function(e){
-		$.post("/setting",
+		$.post("/manage/setting",
 	    {
 	        lng:e.point.lng,
 	        lat:e.point.lat,

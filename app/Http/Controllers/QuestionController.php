@@ -10,6 +10,9 @@ class QuestionController extends Controller
 {
     public function create(Request $request) {
         $question = new Question();
+        if ($request->input('name') == '' || $request->input('url') == '') {
+            return "问卷名称或url不能为空";
+        }
         $question->name = $request->input('name');
         $question->location = new Point($request->input('lat'), $request->input('lng'));
         $question->url = $request->input('url');
