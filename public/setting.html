@@ -1,43 +1,79 @@
 <html>
+
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-	<style type="text/css">
-		body, html,#allmap {width: 100%;height: 100%;overflow: hidden;margin:0;font-family:"微软雅黑";}
-	</style>
-	<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=MNaGcXtTa2nhVWb2mQfx5ebNz6I6gILg"></script>
-	<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.js"></script>
-	<title>设置问卷地理位置</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <link href="https://cdn.bootcss.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" rel="stylesheet">
+    <style type="text/css">
+        .page-header {
+            margin-top: 30px;
+        }
+        
+        #allmap {
+            height: 77%;
+            overflow: hidden;
+            margin: 0;
+            font-family: "微软雅黑";
+        }
+    </style>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=MNaGcXtTa2nhVWb2mQfx5ebNz6I6gILg"></script>
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.js"></script>
+    <title>设置问卷地理位置</title>
 </head>
+
 <body>
-	<div class="input-group input-group-lg">
-		<span class="input-group-addon" id="sizing-addon1">问卷名称</span>
-	  <input type="text" class="form-control" id = "name" placeholder="" aria-describedby="sizing-addon1">
-	  <span class="input-group-addon" id="sizing-addon1">问卷url</span>
-	  <input type="text" class="form-control" id = "url" placeholder="" aria-describedby="sizing-addon1">
-		<span class="input-group-addon" id="sizing-addon1">问卷半径（单位：m）</span>
-	  <input type="text" class="form-control" id = "distance" placeholder="" aria-describedby="sizing-addon1">
-	</div>
-	<div id="allmap"></div>
+    <div class="page-header">
+        <h1>优城美市定位设置系统 <small>点击图上任意一点并填写详细即可轻松定位</small></h1>
+    </div>
+    <div id="allmap"></div>
+    <div class="input-group input-group-lg">
+        <span class="input-group-addon" id="sizing-addon1">问卷名称</span>
+        <input type="text" class="form-control" id="name" placeholder="" aria-describedby="sizing-addon1">
+        <span class="input-group-addon" id="sizing-addon1">问卷半径（单位：m）</span>
+        <input type="text" class="form-control" id="distance" placeholder="" aria-describedby="sizing-addon1">
+    </div>
+    <div class="input-group input-group-lg">
+        <span class="input-group-addon" id="sizing-addon1">经度</span>
+        <input type="text" class="form-control" id="lng" placeholder="" aria-describedby="sizing-addon1">
+        <span class="input-group-addon" id="sizing-addon1">维度</span>
+        <input type="text" class="form-control" id="lat" placeholder="" aria-describedby="sizing-addon1">
+        <button type="button" class="btn btn-danger" id="submit"> 提交 </button>
+    </div>
+
+
 </body>
+
 </html>
 <script type="text/javascript">
-	// 百度地图API功能
-	var map = new BMap.Map("allmap");
-	map.centerAndZoom("武汉",14);
-	//单击获取点击的经纬度
-	map.addEventListener("click",function(e){
-		$.post("/manage/setting",
-	    {
-	        lng:e.point.lng,
-	        lat:e.point.lat,
-					name:$("#name").val(),
-					url:$("#url").val(),
-					distance:$("#distance").val()
-	    },
-		      function(data,status){
-		      alert("数据: \n" + data + "\n状态: " + status);
-		  });
-	});
+    // 百度地图API功能
+    var map = new BMap.Map("allmap");
+    var a = null;
+    var b = null;
+    map.centerAndZoom("武汉", 14);
+    //单击获取点击的经纬度
+    map.addEventListener("click", function(e) {
+        $("#lng").val(e.point.lng);
+        $("#lat").val(e.point.lat);
+        a = e.point.lng;
+        b = e.point.lat;
+    });
+    $("#submit").click(function() {
+        $.post("/manage/setting", {
+                lng: a,
+                lat: b,
+                name: $("#name").val(),
+                url: GetQueryString('url'),
+                distance: $("#distance").val(),
+            },
+            function(data, status) {
+                alert("问卷设定位置成功");
+            });
+    });
 
+    function GetQueryString(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) return unescape(r[2]);
+        return null;
+    }
 </script>
