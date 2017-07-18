@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Question;
+use Carbon\Carbon;
 use Grimzy\LaravelMysqlSpatial\Types\Point;
 use Illuminate\Http\Request;
 
@@ -17,6 +18,8 @@ class QuestionController extends Controller
         $question->location = new Point($request->input('lat'), $request->input('lng'));
         $question->url = $request->input('url');
         $question->distance = $request->input('distance');
+        $question->start_time = $request->input('start_time');
+        $question->end_time = $request->input('end_time');
         $question->save();
 
         return "success";
@@ -29,6 +32,8 @@ class QuestionController extends Controller
 //            ->get();
         $point = new Point($lat, $lng);
         $question = Question::selectRaw("*, st_distance_sphere(`location`, GeomFromText('{$point->toWkt()}')) as dist")
+            ->where('start_time', '<', Carbon::now('Asia/Shanghai'))
+            ->where('end_time', '>', Carbon::now('Asia/Shanghai'))
             ->whereRaw("st_distance_sphere(`location`, GeomFromText('{$point->toWkt()}')) <= `distance`")
             ->get();
         return view('list', ['questions' => $question]);
